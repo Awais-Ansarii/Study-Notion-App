@@ -1,4 +1,6 @@
 const mongoose = require("mongoose")
+const mailSender = require('../utils/mailSender')
+
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -49,5 +51,25 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
+// a function to send email = post-MiddleWare - passward changed
+async function sendPasswordChangedEmail(email) {
+  try {
+    const mailResponse = await mailSender(email, "password updation email from Study-Notion", "Your Account Password has updated successfully")
+    console.log('email sent successfully for password changed: ', mailResponse)
+
+  }
+  
+  catch (error) {
+    console.log("Error while sending email for password change");
+    console.error(error);
+    throw error;
+  }
+}
+ 
+
+userSchema.post("save", async function (next) {
+  await sendVerificationEmail(this.email);
+  next();
+});
 
 module.exports = mongoose.model("User", userSchema)
