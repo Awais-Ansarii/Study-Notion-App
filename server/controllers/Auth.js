@@ -6,7 +6,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 
-
 dotenv.config();
 
 //send OTP for verification
@@ -175,72 +174,64 @@ exports.signUp = async (req, res) => {
 
 //login
 exports.login = async (req, res) => {
-    try {
-        //fetch email from user ki body
-        const { email, password } = req.body;
+  try {
+    //fetch email from user ki body
+    const { email, password } = req.body;
 
-        // validate karlo data ko
-        if (!email || !password) {
-            return res.status(403).json({
-                success: false,
-                message: "All input fields are required",
-            });
-        }
-
-        //check if user is already registered or not
-        const exitstingUser = await User.findOne({ email })
-            .populate("additionalDetails")
-            .exec();
-
-        if (!exitstingUser) {
-            return res.status(401).json({
-                success: false,
-                message: "User is not registered with this email id, sign-up please..",
-            });
-        }
-
-        //compare password in db
-        if (await bcrypt.compare(password, exitstingUser.password)) {
-            //generate token - JWT
-            const JWT_SECRET = process.env.JWT_SECRET;
-            const payload = {
-                email: exitstingUser.email,
-                id: exitstingUser._id,
-                role: exitstingUser.role,
-            };
-            const token = jwt.sign(payload, JWT_SECRET, {
-                expiresIn: "2h",
-            });
-            exitstingUser.token = token //toObject(_)
-            exitstingUser.password = undefined
-
-
-        
-            //create cookie return response 
-            const Options = {
-                expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-                httpOnly: true
-            }
-
-            res.cookie("token", token, Options).status(200).json({
-                success: true,
-                message: "User is Logged-in successfully",
-                user: exitstingUser,
-                token: token,
-        
-            });
-        }
-      else {
-        return res.status(400).json({
-            success: false,
-            message: "Password is wrong",
-        });
+    // validate karlo data ko
+    if (!email || !password) {
+      return res.status(403).json({
+        success: false,
+        message: "All input fields are required",
+      });
     }
-      
 
-    
-} 
-  catch (error) {
+    //check if user is already registered or not
+    const exitstingUser = await User.findOne({ email })
+      .populate("additionalDetails")
+      .exec();
+
+    if (!exitstingUser) {
+      return res.status(401).json({
+        success: false,
+        message: "User is not registered with this email id, sign-up please..",
+      });
+    }
+
+    //compare password in db
+    if (await bcrypt.compare(password, exitstingUser.password)) {
+      //generate token - JWT
+      const JWT_SECRET = process.env.JWT_SECRET;
+      const payload = {
+        email: exitstingUser.email,
+        id: exitstingUser._id,
+        accountType: exitstingUser.accountType,
+      };
+      const token = jwt.sign(payload, JWT_SECRET, {
+        expiresIn: "2h",
+      });
+      exitstingUser.token = token; //toObject(_)
+      exitstingUser.password = undefined;
+
+      //create cookie return response
+      const Options = {
+        expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        httpOnly: true,
+      };
+
+      res.cookie("token", token, Options).status(200).json({
+        success: true,
+        message: "User is Logged-in successfully",
+        user: exitstingUser,
+        token: token,
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Password is wrong",
+      });
+    }
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Error while logging user, try again ",
@@ -261,51 +252,46 @@ exports.changePassword = async (req, res) => {
         success: false,
         message: "All input fields are required",
       });
-      }
+    }
 
     // newPassword and confirmNewPassword ko compare karo
-      if (newPassword !== confirmNewPassword) {
-        return res.status(400).json({
-          success: false,
-          message: "newPassword and confirmNewPassword are not matching, try again",
-        });
-      }
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "newPassword and confirmNewPassword are not matching, try again",
+      });
+    }
 
     //oldpassword ko db me compare karo
-      const user = await User.findOne({ email })
-      
-      if (!user) {
-          return res.status(400).json({
-            success: false,
-            message:
-              "user email is not registered",
-          });
-      }
+    const user = await User.findOne({ email });
 
-      if (await bcrypt.compare(oldPassword, user.password)) {
-          
-          //hash password
-          const newHashedPassword = await bcrypt.hash(newPassword, 10);
-          const updateUserPassword = await User.findByIdAndUpdate({
-              id: email,
-              password: newHashedPassword
-          })
-
-          return res.status(200).json({
-              success: true,
-              message:"password changed successfully",
-          })
-          
-      }
-      else {
-        return res.status(400).json({
-          success: false,
-          message: "Password is wrong, try again",
-        });
-      }
-
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "user email is not registered",
+      });
     }
-   catch (error) {
+
+    if (await bcrypt.compare(oldPassword, user.password)) {
+      //hash password
+      const newHashedPassword = await bcrypt.hash(newPassword, 10);
+      const updateUserPassword = await User.findByIdAndUpdate({
+        id: email,
+        password: newHashedPassword,
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "password changed successfully",
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Password is wrong, try again",
+      });
+    }
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Error while changing user's password, try again ",
