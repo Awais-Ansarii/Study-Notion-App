@@ -5,6 +5,7 @@ const otpGenerator = require("otp-generator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const mailSender = require("../utils/mailSender");
 
 dotenv.config();
 
@@ -276,11 +277,21 @@ exports.changePassword = async (req, res) => {
     if (await bcrypt.compare(oldPassword, user.password)) {
       //hash password
       const newHashedPassword = await bcrypt.hash(newPassword, 10);
-      const updateUserPassword = await User.findByIdAndUpdate({
-        id: email,
-        password: newHashedPassword,
-      });
+      console.log("hashedPassword - ", newHashedPassword);
 
+      //update password in DB
+      await User.findOneAndUpdate(
+        {
+          email: email,
+        },
+        { password: newHashedPassword },
+        { new: true }
+      );
+
+      
+
+      await mailSender(email, "PassWord Update", "Your Password is changes successfully")
+      
       return res.status(200).json({
         success: true,
         message: "password changed successfully",
