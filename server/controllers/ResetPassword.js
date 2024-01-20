@@ -18,7 +18,7 @@ exports.resetPasswordToken = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email });
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -96,7 +96,7 @@ exports.resetPasswordInDB = async (req, res) => {
     }
 
     // token time check
-    if (!user.resetPasswordExpires < Date.now()) {
+    if (user.resetPasswordExpires < Date.now()) {
       return res.status(400).json({
         success: false,
         message: "Token is expired, please re-try",
@@ -117,10 +117,7 @@ exports.resetPasswordInDB = async (req, res) => {
       success: true,
       message: "password resetted successfully in DB",
     });
-      
-  }
-    
-  catch (error) {
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Error while reseting user's password in DB ",

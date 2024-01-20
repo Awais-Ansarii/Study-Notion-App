@@ -128,7 +128,7 @@ exports.signUp = async (req, res) => {
         success: false,
         message: "OTP not found",
       });
-    } else if (otp !== recentOTP) {
+    } else if (otp !== recentOTP.otp) {
       return res.status(400).json({
         success: false,
         message: "OTP is not valid",
@@ -160,7 +160,7 @@ exports.signUp = async (req, res) => {
 
     //return response
     return res.status(200).json({
-      success: true,
+      success: true,  
       message: "User is registered successfully",
       user: user,
     });
@@ -288,10 +288,12 @@ exports.changePassword = async (req, res) => {
         { new: true }
       );
 
-      
+      await mailSender(
+        email,
+        "PassWord Update",
+        "Your Password is changes successfully"
+      );
 
-      await mailSender(email, "PassWord Update", "Your Password is changes successfully")
-      
       return res.status(200).json({
         success: true,
         message: "password changed successfully",
