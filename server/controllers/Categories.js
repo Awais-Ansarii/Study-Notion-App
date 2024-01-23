@@ -1,8 +1,8 @@
-const Tag = require('../models/Tag')
+const Category = require('../models/Category')
 //ctag create krne ki api bnana hai
 //tag create ka handler fn
 
-exports.createTag = async (req, res) => {
+exports.createCategory = async (req, res) => {
     
     try {
         //fetch data from req ki body
@@ -18,17 +18,17 @@ exports.createTag = async (req, res) => {
         }
 
         //DB me entry karo
-        const tagDetails = await Tag.create({
+        const categoryDetails = await Category.create({
             name: name,
             description : description
         })
 
-        console.log("tagDetails ", tagDetails);
+        console.log("categoryDetails ", categoryDetails);
 
         //return response
         res.status(200).json({
           success: true,
-            message: "Tag created successfully",
+            message: "Category created successfully",
           data:tagDetails
           
         });
@@ -37,7 +37,7 @@ exports.createTag = async (req, res) => {
     catch (error) {
         res.status(500).json({
           success: false,
-          message: "Error while creating a new tag, try again ",
+          message: "Error while creating a new Category, try again ",
           error: error.message,
         });
     }
@@ -47,26 +47,28 @@ exports.createTag = async (req, res) => {
 //sare tags lane ki api bnao
 //getAllTag handler
 
-exports.showAllTags = async (req, res) => {
+exports.showAllCategories = async (req, res) => {
   try {
     //find tags in db
-   const allTags =
-       (await Tag.find({}, {
-           name: true,
-           description: true
-       })) 
-     console.log("all tags ", allTags);
+   const allCategories = await Tag.find(
+     {},
+     {
+       name: true,
+       description: true,
+     }
+   ); 
+     console.log("all Categories ", allCategories);
 
     //return response
     res.status(200).json({
       success: true,
-      message: "successfully returning all tags",
-      data: allTags,
+      message: "successfully returning all Categories",
+      data: allCategories,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Error while fetching all tags details ",
+      message: "Error while fetching all Categories details ",
       error: error.message,
     });
   }

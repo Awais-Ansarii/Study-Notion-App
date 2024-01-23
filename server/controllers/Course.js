@@ -1,4 +1,4 @@
-const Tag = require("../models/Tag");
+const Category = require("../models/Category");
 const User = require("../models/User");
 const Course = require("../models/Course");
 const { uploadImageToCloudinary } = require("../utils/imageUploader");
@@ -46,11 +46,11 @@ exports.createCourse = async (req, res) => {
       });
     }
     //tag validation - check given tag is valid or not
-    const tagDetails = await Tag.findById(tag);
-    if (!tagDetails) {
+    const categoryDetails = await Category.findById(tag);
+    if (!categoryDetails) {
       return res.status(404).json({
         success: false,
-        message: "Tag Details not found",
+        message: "Category Details not found",
       });
     }
 
@@ -67,7 +67,7 @@ exports.createCourse = async (req, res) => {
       instructor: instructorDetails._id, //for this,we make db call to get instructor
       whatYouWillLearn: whatYoutWillLearn,
       price,
-      tag: tagDetails._id,
+      tag: categoryDetails._id,
       thumbnail: thumbnailImage.secure_url,
     });
 
@@ -86,8 +86,8 @@ exports.createCourse = async (req, res) => {
 
     //update the TAG ka schema
     //TODO: HW
-    await Tag.findByIdAndUpdate(
-      { _id: tagDetails._id },
+    await Category.findByIdAndUpdate(
+      { _id: categoryDetails._id },
       {
         $push: {
           course: newCourse._id,
