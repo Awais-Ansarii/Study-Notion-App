@@ -5,6 +5,7 @@ const mailSender = require("../utils/mailSender");
 const {
   courseEnrollmentEmail,
 } = require("../mail/templates/courseEnrollmentEmail");
+
 const { default: mongoose } = require("mongoose");
 
 //capture the payment and initiate the Razorpay order
@@ -32,11 +33,11 @@ exports.capturePayment = async (req, res) => {
     }
 
     //user already pay for the same course
-    const uid = new mongoose.Types.ObjectId(userId);
+    const uid = new mongoose.Types.ObjectId(userId); // cpnverted userId from String to objectId
     if (course.studentsEnrolled.includes(uid)) {
       return res.status(200).json({
         success: false,
-        message: "Student is already enrolled",
+        message: "Student is already enrolled in this perticular course",
       });
     }
   } catch (error) {
@@ -64,7 +65,7 @@ exports.capturePayment = async (req, res) => {
   try {
     //initiate the payment using razorpay
     const paymentResponse = await instance.orders.create(options);
-    console.log(paymentResponse);
+    console.log("paymentResponse , ", paymentResponse);
     //return response
     return res.status(200).json({
       success: true,
@@ -87,9 +88,9 @@ exports.capturePayment = async (req, res) => {
 //verify Signature of Razorpay and Server
 
 exports.verifySignature = async (req, res) => {
-  const webhookSecret = "12345678";
+  const webhookSecret = "12345678"; // from our server
 
-  const signature = req.headers["x-razorpay-signature"];
+  const signature = req.headers["x-razorpay-signature"]; //coming from razorpay
 
   const shasum = crypto.createHmac("sha256", webhookSecret);
   shasum.update(JSON.stringify(req.body));
@@ -98,12 +99,14 @@ exports.verifySignature = async (req, res) => {
   if (signature === digest) {
     console.log("Payment is Authorised");
 
+    //get courseID and UserID from notes that we passed as a parameter in payment option
     const { courseId, userId } = req.body.payload.payment.entity.notes;
+    console.log("notes- ", req.body.payload.payment.entity.notes);
 
     try {
-      //fulfil the action
+      //fulfil the action after payment is done - autherized
 
-      //find the course and enroll the student in it
+      //find the course and enroll the student in that course
       const enrolledCourse = await Course.findOneAndUpdate(
         { _id: courseId },
         { $push: { studentsEnrolled: userId } },
@@ -135,7 +138,8 @@ exports.verifySignature = async (req, res) => {
         "Congratulations, you are onboarded into new CodeHelp Course"
       );
 
-      console.log(emailResponse);
+      console.log("emailResponse ", emailResponse);
+
       return res.status(200).json({
         success: true,
         message: "Signature Verified and Course Added",
@@ -150,7 +154,8 @@ exports.verifySignature = async (req, res) => {
   } else {
     return res.status(400).json({
       success: false,
-      message: "Invalid request",
+      message:
+        "Invalid request-Signature not matched in signature verification ",
     });
   }
 };
