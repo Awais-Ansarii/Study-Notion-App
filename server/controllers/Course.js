@@ -153,7 +153,6 @@ exports.showAllCourses = async (req, res) => {
   }
 };
 
-
 //getCourseDetails handler
 
 exports.getCourseDetails = async (req, res) => {

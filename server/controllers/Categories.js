@@ -1,63 +1,58 @@
-const Category = require('../models/Category')
-//ctag create krne ki api bnana hai
-//tag create ka handler fn
+const Category = require("../models/Category");
+//category create krne ki api bnana hai
+//category create ka handler fn
 
 exports.createCategory = async (req, res) => {
-    
-    try {
-        //fetch data from req ki body
+  try {
+    //fetch data from req ki body
 
-        const { name, description } = req.body;
+    const { name, description } = req.body;
 
-        //validation
-        if (!name || !description) {
-            return res.status(400).json({
-              success: false,
-              message: "All fields are required. ",
-            });
-        }
-
-        //DB me entry karo
-        const categoryDetails = await Category.create({
-            name: name,
-            description : description
-        })
-
-        console.log("categoryDetails ", categoryDetails);
-
-        //return response
-        res.status(200).json({
-          success: true,
-            message: "Category created successfully",
-          data:tagDetails
-          
-        });
+    //validation
+    if (!name || !description) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required. ",
+      });
     }
 
-    catch (error) {
-        res.status(500).json({
-          success: false,
-          message: "Error while creating a new Category, try again ",
-          error: error.message,
-        });
-    }
-}
+    //DB me entry karo
+    const categoryDetails = await Category.create({
+      name: name,
+      description: description,
+    });
 
+    console.log("categoryDetails ", categoryDetails);
 
-//sare tags lane ki api bnao
-//getAllTag handler
+    //return response
+    res.status(200).json({
+      success: true,
+      message: "Category created successfully",
+      data: tagDetails,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error while creating a new Category, try again ",
+      error: error.message,
+    });
+  }
+};
+
+//sare category lane ki api bnao
+//getAllcategory handler
 
 exports.showAllCategories = async (req, res) => {
   try {
     //find tags in db
-   const allCategories = await Tag.find(
-     {},
-     {
-       name: true,
-       description: true,
-     }
-   ); 
-     console.log("all Categories ", allCategories);
+    const allCategories = await Tag.find(
+      {},
+      {
+        name: true,
+        description: true,
+      }
+    );
+    console.log("all Categories ", allCategories);
 
     //return response
     res.status(200).json({
@@ -72,4 +67,48 @@ exports.showAllCategories = async (req, res) => {
       error: error.message,
     });
   }
-}; 
+};
+
+//categoryPageDetails
+
+exports.categoryPageDetails = async (req, res) => {
+  try {
+    //get categoryId
+    const { categoryId } = req.body;
+    //get courses for specified categoryId
+    const selectedCategory = await Category.findById(categoryId)
+      .populate("courses")
+      .exec();
+    //validation
+    if (!selectedCategory) {
+      return res.status(404).json({
+        success: false,
+        message: "Data Not Found",
+      });
+    }
+
+    //get coursesfor different categories
+    const differentCategories = await Category.find({
+      _id: { $ne: categoryId }, //ne = not equal to
+    })
+      .populate("courses")
+      .exec();
+
+    //get top 10 selling courses
+
+    //return response
+    return res.status(200).json({
+      success: true,
+      data: {
+        selectedCategory,
+        differentCategories,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
