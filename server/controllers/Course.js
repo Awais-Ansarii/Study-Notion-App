@@ -12,8 +12,14 @@ exports.createCourse = async (req, res) => {
   try {
     //fetch data from req ki body
 
-    const { whatYouWillLearn, courseName, courseDescription, price, tag } =
-      req.body;
+    const {
+      whatYouWillLearn,
+      courseName,
+      courseDescription,
+      price,
+      tag,
+      category,
+    } = req.body;
 
     //fetch image thumbnail from req ki files
     const thumbnail = req.files.thumbnailImage;
@@ -24,6 +30,7 @@ exports.createCourse = async (req, res) => {
       !courseDescription ||
       !whatYouWillLearn ||
       !tag ||
+      !category ||
       !price ||
       !thumbnail
     ) {
@@ -45,8 +52,8 @@ exports.createCourse = async (req, res) => {
         message: "instructor details not found. ",
       });
     }
-    //tag validation - check given tag is valid or not
-    const categoryDetails = await Category.findById(tag);
+    //category validation - check given category is valid or not
+    const categoryDetails = await Category.findById(category);
     if (!categoryDetails) {
       return res.status(404).json({
         success: false,
@@ -67,7 +74,7 @@ exports.createCourse = async (req, res) => {
       instructor: instructorDetails._id, //for this,we make db call to get instructor
       whatYouWillLearn: whatYoutWillLearn,
       price,
-      tag: categoryDetails._id,
+      category: categoryDetails._id,
       thumbnail: thumbnailImage.secure_url,
     });
 
@@ -84,8 +91,8 @@ exports.createCourse = async (req, res) => {
       { new: true }
     );
 
-    //update the TAG ka schema
-    //TODO: HW
+    //update the Category ka schema
+    //TODO:
     await Category.findByIdAndUpdate(
       { _id: categoryDetails._id },
       {
