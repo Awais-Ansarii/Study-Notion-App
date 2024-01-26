@@ -6,10 +6,12 @@ dotenv.config();
 //auth middleWare - check authentication of user by checking json token
 exports.auth = async (req, res, next) => {
   try {
+    // console.log("inside auth middleware");
     const token =
-      req.header("Authorisation").replace("Bearer ", "") ||
+      req.body.token ||
       req.cookies.token ||
-      req.body.token;
+      req.header("Authorisation").replace("Bearer ", "");
+      // console.log("token- ", token);
     //if token missing
     if (!token) {
       return res.status(401).json({

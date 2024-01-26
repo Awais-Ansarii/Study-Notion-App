@@ -32,10 +32,19 @@ const userSchema = new mongoose.Schema({
     ref: "Profile",
     required: true,
   },
-  courses: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Course",
-    required: true,
+  courses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+    },
+  ],
+  active: {
+    type: Boolean,
+    default: true,
+  },
+  approved: {
+    type: Boolean,
+    default: true,
   },
   image: {
     type: String,
