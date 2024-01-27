@@ -28,7 +28,7 @@ exports.createCategory = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Category created successfully",
-      data: tagDetails,
+      data: categoryDetails,
     });
   } catch (error) {
     res.status(500).json({
@@ -45,7 +45,7 @@ exports.createCategory = async (req, res) => {
 exports.showAllCategories = async (req, res) => {
   try {
     //find tags in db
-    const allCategories = await Tag.find(
+    const allCategories = await Category.find(
       {},
       {
         name: true,

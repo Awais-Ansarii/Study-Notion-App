@@ -11,7 +11,7 @@ exports.auth = async (req, res, next) => {
       req.body.token ||
       req.cookies.token ||
       req.header("Authorisation").replace("Bearer ", "");
-      // console.log("token- ", token);
+    // console.log("token- ", token);
     //if token missing
     if (!token) {
       return res.status(401).json({
@@ -90,6 +90,9 @@ exports.isInstructor = async (req, res, next) => {
 //isAdmin
 exports.isAdmin = async (req, res, next) => {
   try {
+    console.log("inside admin");
+
+    console.log("req.user.accountType = ", req.user.accountType);
     if (req.user.accountType !== "Admin") {
       return res.status(401).json({
         success: false,

@@ -15,24 +15,23 @@ exports.createSection = async (req, res) => {
     //create section
     const newSection = await Section.create({ sectionName });
     //update course with section ObjectID of new section
-      const updatedCourseDetails = await Course.findByIdAndUpdate(
-          courseId,
-          {
-              $push: {
-                  courseContent: newSection._id,
-              },
-          },
-          { new: true }
-      );
+    const updatedCourseDetails = await Course.findByIdAndUpdate(
+      courseId,
+      {
+        $push: {
+          courseContent: newSection._id,
+        },
+      },
+      { new: true }
+    );
     //   .populate("courseContent")
     //   .exec();
 
-
-// You can use array syntax:
+    // You can use array syntax:
     //   let results = await OrderModel.find().populate(['user', 'meal']);
-      
-// You can also select which properties you want from each populate:
-// let results = await OrderModel.find().populate([{path: 'user', select: 'firstname'}, {path: 'meal', select: 'name'}]);
+
+    // You can also select which properties you want from each populate:
+    // let results = await OrderModel.find().populate([{path: 'user', select: 'firstname'}, {path: 'meal', select: 'name'}]);
     //HW: use populate to replace sections/sub-sections both in the updatedCourseDetails
 
     //return response
@@ -87,10 +86,13 @@ exports.updateSection = async (req, res) => {
 exports.deleteSection = async (req, res) => {
   try {
     //get ID - assuming that we are sending ID in params
-    const { sectionId } = req.params;
+    // const { sectionId } = req.params;
+    const { sectionId, courseId } = req.body;
     //use findByIdandDelete
     await Section.findByIdAndDelete(sectionId);
+    // await Course.findByIdAndDelete(courseId);
     //TODO[Testing]: do we need to delete the entry from the course schema ??
+    // course me se bhi delete karo
     //return response
     return res.status(200).json({
       success: true,

@@ -18,6 +18,8 @@ exports.createCourse = async (req, res) => {
       courseDescription,
       price,
       tag,
+      status,
+      instructions,
       category,
     } = req.body;
 
@@ -38,6 +40,11 @@ exports.createCourse = async (req, res) => {
         success: false,
         message: "All fields are required. ",
       });
+    }
+    if (!status || status === undefined) {
+      console.log("inside status validation");
+      console.log(status);
+      // status = "Draft;
     }
 
     //validation of instructor
@@ -71,9 +78,11 @@ exports.createCourse = async (req, res) => {
     const newCourse = await Course.create({
       courseName,
       courseDescription,
-      instructor: instructorDetails._id, //for this,we make db call to get instructor
-      whatYouWillLearn: whatYoutWillLearn,
+      instructor: instructorDetalis._id, //for this,we make db call to get instructor
+      whatYouWillLearn: whatYouWillLearn,
       price,
+      status: status,
+      instructions: instructions,
       category: categoryDetails._id,
       thumbnail: thumbnailImage.secure_url,
     });
@@ -82,7 +91,7 @@ exports.createCourse = async (req, res) => {
 
     //add the new course to the user schema of Instructor
     await User.findByIdAndUpdate(
-      { _id: instructorDetails._id },
+      { _id: instructorDetalis._id },
       {
         $push: {
           courses: newCourse._id,
@@ -168,7 +177,7 @@ exports.getCourseDetails = async (req, res) => {
         },
       })
       .populate("category")
-      .populate("ratingAndreviews")
+      // .populate("ratingAndreviews")
       .populate({
         path: "courseContent",
         populate: {

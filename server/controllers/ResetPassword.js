@@ -3,6 +3,7 @@ const mailSender = require("../utils/mailSender");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const crypto = require("crypto");
 
 //reset password token
 exports.resetPasswordToken = async (req, res) => {
