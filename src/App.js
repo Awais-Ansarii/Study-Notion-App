@@ -4,7 +4,7 @@ import "./App.css";
 
 function App() { 
   return (
-    <div className="w-screen  min-h-screen bg-richblack-900 flex flex-col flex-wrap font-inter">
+    <div className="w-screen  min-h-screen bg-richblack-900 flex flex-col  font-inter">
       <Routes>
         <Route path="/" element={<Home />}></Route>
       </Routes>
