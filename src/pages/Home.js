@@ -164,7 +164,7 @@ const Home = () => {
         {/* revirew slider is here */}
 
       </div>
-      {/* footer */}
+      {/* footer 1-18-32 */}
       <Footer/>
     </div>
   );
