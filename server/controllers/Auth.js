@@ -68,7 +68,7 @@ exports.signup = async (req, res) => {
       // Invalid OTP
       return res.status(400).json({
         success: false,
-        message: "The OTP is not valid",
+        message: "The OTP is not matching",
       });
     }
 
@@ -178,6 +178,7 @@ exports.login = async (req, res) => {
     });
   }
 };
+
 // Send OTP For Email Verification
 exports.sendotp = async (req, res) => {
   try {

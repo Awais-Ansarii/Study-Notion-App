@@ -28,7 +28,7 @@ const Navbar = () => {
       console.log(error);
     }
   };
-  console.log("printing sublinks : ", subLinks);
+
 
   useEffect(() => {
     fetchSubLinks();

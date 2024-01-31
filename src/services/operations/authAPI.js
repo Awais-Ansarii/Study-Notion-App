@@ -6,6 +6,7 @@ import { setUser } from "../../slices/profileSlice";
 import { apiConnector } from "../apiconnector";
 import { endpoints } from "../apis";
 
+
 const {
   SENDOTP_API,
   SIGNUP_API,
@@ -14,7 +15,13 @@ const {
   RESETPASSWORD_API,
 } = endpoints;
 
-export function sendOtp(email, navigate) {
+
+
+console.log(SIGNUP_API);
+
+export function sendOtp(email ) {
+
+  
   return async (dispatch) => {
     const toastId = toast.loading("Loading...");
     dispatch(setLoading(true));
@@ -23,7 +30,7 @@ export function sendOtp(email, navigate) {
         email,
         checkUserPresent: true,
       });
-      console.log("SENDOTP API RESPONSE............", response);
+      console.log("SEND-OTP API RESPONSE............", response);
 
       console.log(response.data.success);
 
@@ -32,7 +39,7 @@ export function sendOtp(email, navigate) {
       }
 
       toast.success("OTP Sent Successfully");
-      navigate("/verify-email");
+      // navigate("");
     } catch (error) {
       console.log("SENDOTP API ERROR............", error);
       toast.error("Could Not Send OTP");
@@ -107,7 +114,9 @@ export function login(email, password, navigate) {
       dispatch(setUser({ ...response.data.user, image: userImage }));
       localStorage.setItem("token", JSON.stringify(response.data.token));
       navigate("/dashboard/my-profile");
-    } catch (error) {
+    }
+    
+    catch (error) {
       console.log("LOGIN API ERROR............", error);
       toast.error("Login Failed");
     }
