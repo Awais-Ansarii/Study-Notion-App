@@ -132,7 +132,7 @@ const Navbar = () => {
               )
             }
             {
-              //show SignUp button
+              //show dashboard and logout button
               token !== null && <ProfileDropdown />
             }
           </div>
