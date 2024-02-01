@@ -1,13 +1,22 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { getPasswordResetToken } from "../services/operations/authAPI";
 
 const ForgotPassword = () => {
   const { loading } = useSelector((state) => state.auth);
   const [emailSent, setEmailSent] = useState(false);
   const [email, setEmail] = useState("");
+  const dispatch = useDispatch()
+
+
+  const handleOnSubmit = (e) => {
+    e.preventDefault()
+    dispatch(getPasswordResetToken(email, setEmailSent));
+  }
+
   return (
-    <div className="text-richblack-5">
+    <div className="text-richblack-5 flex justify-center items-center h-[80vh]  ">
       {loading ? (
         <div> Loading... </div>
       ) : (
@@ -20,7 +29,7 @@ const ForgotPassword = () => {
               : `We have sent the reset email to ${email}`}
           </p>
 
-          <form>
+          <form onSubmit={handleOnSubmit}>
             {!emailSent && (
               <label>
                 <p>Email Address</p>
@@ -36,7 +45,7 @@ const ForgotPassword = () => {
               </label>
               )}
               
-              <button className="bg-richblack-500 p-2 rounded-md">
+              <button type="submit" className="bg-richblack-500 p-2 rounded-md">
                 {
                   !emailSent ? "Reset Password" : "Resend Email" 
                 }

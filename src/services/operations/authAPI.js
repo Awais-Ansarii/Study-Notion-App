@@ -6,7 +6,6 @@ import { setUser } from "../../slices/profileSlice";
 import { apiConnector } from "../apiconnector";
 import { endpoints } from "../apis";
 
-
 const {
   SENDOTP_API,
   SIGNUP_API,
@@ -15,13 +14,9 @@ const {
   RESETPASSWORD_API,
 } = endpoints;
 
+// console.log(SIGNUP_API);
 
-
-console.log(SIGNUP_API);
-
-export function sendOtp(email ) {
-
-  
+export function sendOtp(email) {
   return async (dispatch) => {
     const toastId = toast.loading("Loading...");
     dispatch(setLoading(true));
@@ -114,9 +109,7 @@ export function login(email, password, navigate) {
       dispatch(setUser({ ...response.data.user, image: userImage }));
       localStorage.setItem("token", JSON.stringify(response.data.token));
       navigate("/dashboard/my-profile");
-    }
-    
-    catch (error) {
+    } catch (error) {
       console.log("LOGIN API ERROR............", error);
       toast.error("Login Failed");
     }
@@ -134,7 +127,7 @@ export function getPasswordResetToken(email, setEmailSent) {
         email,
       });
 
-      console.log("RESETPASSTOKEN RESPONSE............", response);
+      console.log("RESET-PASS-TOKEN RESPONSE............", response);
 
       if (!response.data.success) {
         throw new Error(response.data.message);
@@ -143,8 +136,13 @@ export function getPasswordResetToken(email, setEmailSent) {
       toast.success("Reset Email Sent");
       setEmailSent(true);
     } catch (error) {
-      console.log("RESETPASSTOKEN ERROR............", error);
+      console.log(
+        "RESET-PASS-TOKEN ERROR............",
+        error
+      );
       toast.error("Failed To Send Reset Email");
+      toast.error(error.response.data.message);
+
     }
     toast.dismiss(toastId);
     dispatch(setLoading(false));

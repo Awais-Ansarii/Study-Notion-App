@@ -21,9 +21,11 @@ exports.resetPasswordToken = async (req, res) => {
 
     const user = await User.findOne({ email: email });
     if (!user) {
+      console.log("User Email is  not registered here");
       return res.status(401).json({
         success: false,
         message: "User Email is  not registered",
+        
       });
     }
 
